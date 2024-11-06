@@ -1,0 +1,155 @@
+import pandas as pd
+import numpy as np
+
+#UNDERSTANDING THE DATASET
+# loading the dataset of water quality in excel named as project
+file_path = 'project.xlsx'
+data = pd.read_excel(file_path)
+
+#knowing the number of rows and columns    
+print(data.shape)
+
+#understanding the data types columns and values of datasets in details 
+data.info()
+
+#handling the null values of the data
+
+#droping the rows and columns where all values are null if any
+drop_row_na = data.dropna()
+drop_columns_na = data.dropna(axis=1)
+
+
+#fill the null values with the central tendencies.
+#starting with the temperature related columns by adding mean to the in null values
+data['TEMPERATURE �C : Min'] = data['TEMPERATURE �C : Min'].fillna(data['TEMPERATURE �C : Min'].mean())
+data['TEMPERATURE �C : Max'] = data['TEMPERATURE �C : Max'].fillna(data['TEMPERATURE �C : Max'].mean())
+data['TEMPERATURE �C : Mean'] = data['TEMPERATURE �C : Mean'].fillna(data['TEMPERATURE �C : Mean'].mean())
+
+#starting with the D.O. related columns by adding mean to the in null values
+data['D.O. (mg/l) : Min : > 4 mg/l'] = data['D.O. (mg/l) : Min : > 4 mg/l'].fillna(data['D.O. (mg/l) : Min : > 4 mg/l'].median())
+data['D.O. (mg/l) : Max : > 4 mg/l'] = data['D.O. (mg/l) : Max : > 4 mg/l'].fillna(data['D.O. (mg/l) : Max : > 4 mg/l'].median())
+data['D.O. (mg/l) : Mean : > 4 mg/l'] = data['D.O. (mg/l) : Mean : > 4 mg/l'].fillna(data['D.O. (mg/l) : Mean : > 4 mg/l'].median())
+
+
+#starting with the pH related columns by adding mean to the in null values
+data['pH : Min : 6.5-8.5'] = data['pH : Min : 6.5-8.5'].fillna(data['pH : Min : 6.5-8.5'].mean())
+data['pH : Max : 6.5-8.5'] = data['pH : Max : 6.5-8.5'].fillna(data['pH : Max : 6.5-8.5'].mean())
+data['pH : Mean : 6.5-8.5'] = data['pH : Mean : 6.5-8.5'].fillna(data['pH : Mean : 6.5-8.5'].mean())
+
+#starting with the CONDUCTIVITY related columns by adding mean to the in null values
+data['CONDUCTIVITY (�mhos/cm) : Min'] = data['CONDUCTIVITY (�mhos/cm) : Min'].fillna(data['CONDUCTIVITY (�mhos/cm) : Min'].mean())
+data['CONDUCTIVITY (�mhos/cm) : Max'] = data['CONDUCTIVITY (�mhos/cm) : Max'].fillna(data['CONDUCTIVITY (�mhos/cm) : Max'].mean())
+data['CONDUCTIVITY (�mhos/cm) : Mean'] = data['CONDUCTIVITY (�mhos/cm) : Mean'].fillna(data['CONDUCTIVITY (�mhos/cm) : Mean'].mean())
+
+
+#starting with the B.O.D. related columns by adding mean to the in null values
+data['B.O.D. (mg/l) : Min : < 3 mg/l'] = data['B.O.D. (mg/l) : Min : < 3 mg/l'].fillna(data['B.O.D. (mg/l) : Min : < 3 mg/l'].mode())
+data['B.O.D. (mg/l) : Max : < 3 mg/l'] = data['B.O.D. (mg/l) : Max : < 3 mg/l'].fillna(data['B.O.D. (mg/l) : Max : < 3 mg/l'].mode())
+data['B.O.D. (mg/l) : Mean : < 3 mg/l'] = data['B.O.D. (mg/l) : Mean : < 3 mg/l'].fillna(data['B.O.D. (mg/l) : Mean : < 3 mg/l'].mode())
+
+#starting with the fecal related columns by adding mean to the in null values
+
+data['FECAL COLIFORM (MPN/100ml) : Min : < 2500 MPN/100ml'] = data['FECAL COLIFORM (MPN/100ml) : Min : < 2500 MPN/100ml'].fillna(data['FECAL COLIFORM (MPN/100ml) : Min : < 2500 MPN/100ml'].mean())
+data['FECAL COLIFORM (MPN/100ml) : Max : < 2500 MPN/100ml'] = data['FECAL COLIFORM (MPN/100ml) : Max : < 2500 MPN/100ml'].fillna(data['FECAL COLIFORM (MPN/100ml) : Max : < 2500 MPN/100ml'].mean())
+data['FECAL COLIFORM (MPN/100ml) : Mean : < 2500 MPN/100ml'] = data['FECAL COLIFORM (MPN/100ml) : Mean : < 2500 MPN/100ml'].fillna(data['FECAL COLIFORM (MPN/100ml) : Mean : < 2500 MPN/100ml'].mean())
+
+#starting with the Coliform related columns by adding mean to the in null values
+
+data['TOTAL COLIFORM (MPN/100ml) : Min : < 5000 MPN/100ml'] = data['TOTAL COLIFORM (MPN/100ml) : Min : < 5000 MPN/100ml'].fillna(data['TOTAL COLIFORM (MPN/100ml) : Min : < 5000 MPN/100ml'].mean())
+data['TOTAL COLIFORM (MPN/100ml) : Max : < 5000 MPN/100ml'] = data['TOTAL COLIFORM (MPN/100ml) : Max : < 5000 MPN/100ml'].fillna(data['TOTAL COLIFORM (MPN/100ml) : Max : < 5000 MPN/100ml'].mean())
+data['TOTAL COLIFORM (MPN/100ml) : Mean : < 5000 MPN/100ml'] = data['TOTAL COLIFORM (MPN/100ml) : Mean : < 5000 MPN/100ml'].fillna(data['TOTAL COLIFORM (MPN/100ml) : Mean : < 5000 MPN/100ml'].mean())
+
+#verifying changes made in whole dataset with the above queries 
+value_counts = data.count()
+print(value_counts)
+
+
+# Remove Duplicate Entries using pandas
+data = data.drop_duplicates()
+
+import pandas as pd
+import re
+
+# Remove the different characters, like stickers, from the column name.
+data.columns = [re.sub(r'[\W_]+', ' ', col).strip() for col in data.columns]
+
+# Remove the different characters, like stickers, from a particular column.
+data['LOCATIONS'] = data['LOCATIONS'].apply(lambda x: re.sub(r'[\W_]+', ' ', str(x)).strip() if pd.notnull(x) else x)
+
+# This for loop helps the columns of the whole dataset to standardized in title string using pandas
+for col in data.select_dtypes(include='object').columns:
+    data[col] = data[col].str.title()
+
+print(data.columns)
+
+#correcting the minor errors of dataset
+data['STATE'] = data['STATE'].replace({'Tamilnadu': 'Tamil Nadu'})
+
+Univariate analysis
+#1
+import matplotlib.pyplot as plt 
+import seaborn as sns
+
+plt.title("KDE of minimum temprature")
+sns.kdeplot(x="TEMPERATURECMin",data=data,color="black")
+plt.show()
+
+#the graph tells us about the skewness of the data which is highly negatively skewed.
+
+data.TEMPERATURECMin.skew()
+
+#2
+
+sns.boxplot(x="TEMPERATURECMin",data=data)
+plt.show()
+
+#here the box plot analysis helps us to understand the mean
+#minimum temperature around all locations with the outliers which are below the minimum temperatures
+
+
+Bivariate analysis
+
+plt.title("bar plot of minimum temprature with respect to state")
+sns.barplot(x="STATE",y="TEMPERATURECMin",data=data)
+plt.show()
+
+plt.title("bar plot of maximum temprature with respect to state")
+sns.barplot(x="STATE",y="TEMPERATURECMax",data=data)
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
